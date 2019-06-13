@@ -1,0 +1,37 @@
+{
+  "name": "bank-acc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "ejs": "^2.6.1",
+    "express": "^4.17.1",
+    "fp-ts": "^1.18.2",
+    "listr": "^0.14.3",
+    "lodash": "^4.17.11",
+    "meow": "^5.0.0",
+    "mkdirp": "^0.5.1",
+    "moment": "^2.24.0",
+    "open": "^6.3.0",
+    "plaid": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.17.0",
+    "@types/express": "^4.17.0",
+    "@types/jest": "^24.0.13",
+    "@types/listr": "^0.14.0",
+    "@types/lodash": "^4.14.134",
+    "@types/meow": "^5.0.0",
+    "@types/mkdirp": "^0.5.2",
+    "@types/moment": "^2.13.0",
+    "@types/opn": "^5.5.0",
+    "jest": "^24.8.0",
+    "ts-jest": "^24.0.2"
+  }
+}
