@@ -31,13 +31,12 @@ export namespace TransactionsCommand {
           builder.addAccountId(accountId)
         })
     }
+
     if (over !== null && over !== undefined) { builder.amountMoreThan(over) }
     if (under !== null && under !== undefined) { builder.amountLessThan(under) }
 
     const query = builder.get()
-
-    const transactions =
-      await TransactionsRepo.find(query)
+    const transactions = await TransactionsRepo.find(query)
 
     const table = new Table({
       head: ["date", "account", "name", "amount"],
