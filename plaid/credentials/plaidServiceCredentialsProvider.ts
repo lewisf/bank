@@ -9,7 +9,7 @@
 import fs from "fs"
 import _ from "lodash"
 import { Option, some, none } from "fp-ts/lib/Option"
-import { INIT_NOT_READY } from "../../static/messages"
+import { INIT_NOT_READY } from "../../static/strings"
 import { CREDENTIALS_FILE_PATH } from "../../static/constants"
 
 interface PlaidCredentials {

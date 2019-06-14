@@ -2,9 +2,10 @@ import meow from 'meow'
 import open from 'open'
 
 import { AuthenticationApp } from '../auth/app'
-import { INIT_NOT_READY } from '../static/messages'
+import { INIT_NOT_READY } from '../static/strings'
 import { PlaidClientProvider } from '../plaid/clientProvider'
 import { AccountTokensStore } from '../plaid/credentials/accountTokensStore'
+import { MessageSender } from '../notifications/MessageSender';
 
 export namespace InitCommand {
   export function isClientConfigured() {
@@ -23,7 +24,11 @@ export namespace InitCommand {
       const APP_PORT = 3000
       const server = app.listen(APP_PORT, async () => {
         app.on("forceShutdown", () => {
-          server.close()
+          MessageSender.send({
+            title: 'Setup success!',
+            message: 'Run `bank sync` next'
+          });
+          server.close();
         })
 
         console.log('Opening your browser to setup your bank account.. ')
@@ -36,8 +41,8 @@ export namespace InitCommand {
       console.log(`Already initialized. Try some other commands!
 
 Examples:
-      bank transactions
-      bank sync
+    bank transactions
+    bank sync
 `)
     }
   }

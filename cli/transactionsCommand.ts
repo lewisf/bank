@@ -1,12 +1,11 @@
 import _ from 'lodash';
 import meow from 'meow';
-import moment, { ISO_8601 } from 'moment';
 import Table from 'cli-table';
 import { TransactionsRepo } from '../store/db';
 import { AccountsRepo } from '../store/db';
 import { Account } from '../store/Account';
-import { Transaction, TransactionQueryBuilder } from '../store/Transaction';
-import { In, MoreThan } from 'typeorm';
+import { TransactionQueryBuilder } from '../store/Transaction';
+import { MessageSender } from '../notifications/MessageSender';
 
 const ISO8601_FORMAT = "YYYY-MM-DD";
 
@@ -55,6 +54,14 @@ export namespace TransactionsCommand {
         ])
       })
 
+    MessageSender.send({
+      title: "Query successful",
+      message: `Found ${transactions.length} transactions`,
+    })
+
     console.log(table.toString());
+
+    // Until node-notifier is fixed upstream
+    process.exit(0)
   }
 }
