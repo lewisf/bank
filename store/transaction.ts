@@ -47,17 +47,35 @@ export class Transaction {
  * @returns {string} ISO-8601 date
  */
 export async function getEarliestTransactionDate() {
-  const transactions = await TransactionsRepo.find();
-  if (_.isEmpty(transactions)) {
-    return null
-  } else {
-    return _(transactions)
-      .chain()
-      .sortBy(['date'])
-      .first()
-      .get('date')
-      .value()
+  const [latestRecorded] = await TransactionsRepo.find({
+    order: {
+      date: 'ASC'
+    },
+    take: 1
+  });
+
+  if (latestRecorded) {
+    return latestRecorded.date
   }
+}
+
+export async function getLatestRecordedTransactionDate() {
+  const [latestRecorded] = await TransactionsRepo.find({
+    order: {
+      date: 'DESC'
+    },
+    take: 1
+  });
+
+  if (latestRecorded) {
+    return latestRecorded.date
+  } else {
+    return null
+  }
+}
+
+export async function count() {
+  return await TransactionsRepo.count();
 }
 
 export class TransactionQueryBuilder {

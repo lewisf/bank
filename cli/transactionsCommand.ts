@@ -36,7 +36,6 @@ export namespace TransactionsCommand {
     if (under) { builder.amountLessThan(under) }
 
     const query = builder.get()
-    console.log(query)
 
     const transactions =
       await TransactionsRepo.find(query)
