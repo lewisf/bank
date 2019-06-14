@@ -11,20 +11,26 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "cli-table": "^0.3.1",
     "ejs": "^2.6.1",
     "express": "^4.17.1",
     "fp-ts": "^1.18.2",
+    "inquirer": "^6.3.1",
     "listr": "^0.14.3",
     "lodash": "^4.17.11",
     "meow": "^5.0.0",
     "mkdirp": "^0.5.1",
     "moment": "^2.24.0",
     "open": "^6.3.0",
-    "plaid": "^4.0.0"
+    "plaid": "^4.0.0",
+    "sqlite3": "^4.0.9",
+    "typeorm": "^0.2.18"
   },
   "devDependencies": {
     "@types/body-parser": "^1.17.0",
+    "@types/cli-table": "^0.3.0",
     "@types/express": "^4.17.0",
+    "@types/inquirer": "^6.0.3",
     "@types/jest": "^24.0.13",
     "@types/listr": "^0.14.0",
     "@types/lodash": "^4.14.134",
@@ -32,6 +38,7 @@
     "@types/mkdirp": "^0.5.2",
     "@types/moment": "^2.13.0",
     "@types/opn": "^5.5.0",
+    "@types/sqlite3": "^3.1.5",
     "jest": "^24.8.0",
     "ts-jest": "^24.0.2"
   }

@@ -11,7 +11,7 @@ import {
   TOKENS_FILE_PATH,
   PLAID_CONFIG_DIR
 } from '../../static/constants'
-import { none, fromNullable } from 'fp-ts/lib/Option';
+import { none, fromNullable } from 'fp-ts/lib/Option'
 
 export namespace AccountTokensStore {
   type key = 'PUBLIC_TOKEN' | 'ACCESS_TOKEN' | 'ITEM_ID'
@@ -26,8 +26,12 @@ export namespace AccountTokensStore {
         TOKENS_FILE_PATH,
         JSON.stringify(emptyConfig, null, 2),
         'utf8'
-      );
+      )
     }
+  }
+
+  export function clear() {
+    fs.unlinkSync(TOKENS_FILE_PATH)
   }
 
   export function get(key: key) {
@@ -37,13 +41,20 @@ export namespace AccountTokensStore {
     return fromNullable(value)
   }
 
+  export function getOrError(key: key): string {
+    const getOpt = get(key);
+
+    if (getOpt.isNone()) { throw new Error("No value at key: ${key}") }
+    return getOpt.value
+  }
+
   export function set(key: key, value: value) {
     ensureJsonFileExists()
-    const fileContents = require(TOKENS_FILE_PATH);
-    fileContents[key] = value;
+    const fileContents = require(TOKENS_FILE_PATH)
+    fileContents[key] = value
 
     fs.writeFileSync(TOKENS_FILE_PATH, JSON.stringify(fileContents, null, 2), 'utf8')
 
-    return value;
+    return value
   }
 }

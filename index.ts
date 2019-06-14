@@ -1,17 +1,17 @@
-import _ from "lodash";
-import open from "open";
-import { fromNullable } from "fp-ts/lib/Option";
+import _ from "lodash"
+import open from "open"
+import { fromNullable } from "fp-ts/lib/Option"
 
-import { cli, main } from "./cli";
+import { cli, main } from "./cli"
 
 const {
   input,
   flags,
   help
-} = cli;
+} = cli
 
 const commandOpt = fromNullable(_(input).first())
-  .map(command => main(command, cli));
+  .map(command => main(command, cli))
 
 if (commandOpt.isNone()) {
   cli.showHelp()

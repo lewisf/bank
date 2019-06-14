@@ -12,14 +12,11 @@ export namespace NumericDate {
   }
 
   export function make(candidate: string): Valid | Invalid {
-    if (candidate.length !== 10) {
-      return { type: "invalid", value: candidate }
-    }
+    if (!candidate) { return { type: "invalid", value: candidate } }
+    if (candidate.length !== 10) { return { type: "invalid", value: candidate } }
 
-    const [y, m, d] = candidate.split('-');
-    if (!y || !m || !d) {
-      return { type: "invalid", value: candidate }
-    }
+    const [y, m, d] = candidate.split('-')
+    if (!y || !m || !d) { return { type: "invalid", value: candidate } }
 
     return { type: "valid", value: candidate }
   }

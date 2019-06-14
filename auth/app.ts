@@ -10,9 +10,9 @@ import { AccountTokensStore as ATS } from '../plaid/credentials/accountTokensSto
 import { SUPPORTED_COUNTRY_INSTITUTIONS } from '../static/constants'
 
 export namespace AuthenticationApp {
-  const clientOpt = PlaidClientProvider.getClient()
+  const clientOpt = PlaidClientProvider.getClientOpt()
   if (clientOpt.isNone()) {
-    throw new Error('Application is misconfigured. Please ensure Plaid credentials are provided.');
+    throw new Error('Application is misconfigured. Please ensure Plaid credentials are provided.')
   }
 
   const client = clientOpt.value
@@ -36,7 +36,7 @@ export namespace AuthenticationApp {
   })
 
   app.post('/get_access_token', async (request, response, next) => {
-    if (!request.body.public_token) { throw new Error("Missing required PUBLIC_TOKEN"); }
+    if (!request.body.public_token) { throw new Error("Missing required PUBLIC_TOKEN") }
     const publicToken = ATS.set("PUBLIC_TOKEN", request.body.public_token)
 
     try {
@@ -48,9 +48,12 @@ export namespace AuthenticationApp {
 
       prettyPrintResponse(tokenResponse)
 
+      console.log("")
+      console.log("Success! Try running `bank prime` next to prime transactions")
+
       setTimeout(() => {
         app.emit("forceShutdown")
-      }, 1000)
+      }, 0)
 
       return response.json({
         access_token: accessToken,
@@ -69,7 +72,7 @@ export namespace AuthenticationApp {
       throw new Error("Missing ACCESS_TOKEN")
     }
 
-    const { item: { item_id } } = await client.getItem(accessToken.value);
+    const { item: { item_id } } = await client.getItem(accessToken.value)
     return response.json({
       item_id,
       error: false,
@@ -90,10 +93,10 @@ export namespace AuthenticationApp {
       prettyPrintResponse(authResponse)
       return response.json({ error: null, auth: authResponse })
     } catch (error) {
-      prettyPrintResponse(error);
+      prettyPrintResponse(error)
       return response.json({ error: error })
     }
-  });
+  })
 
   // Retrieve Transactions for an Item
   // https://plaid.com/docs/#transactions
@@ -102,8 +105,8 @@ export namespace AuthenticationApp {
     const accessToken: Option<string> = ATS.get("ACCESS_TOKEN")
     if (accessToken.isNone()) { throw new Error("Missing access token") }
 
-    var startDate = moment().subtract(30, 'days').format('YYYY-MM-DD');
-    var endDate = moment().format('YYYY-MM-DD');
+    var startDate = moment().subtract(30, 'days').format('YYYY-MM-DD')
+    var endDate = moment().format('YYYY-MM-DD')
 
     try {
       const transactionsResponse = await client.getTransactions(
@@ -125,6 +128,7 @@ export namespace AuthenticationApp {
   })
 
   const prettyPrintResponse = (response: object) => {
-    console.log(util.inspect(response, { colors: true, depth: 4 }))
+    return;
+    // console.log(util.inspect(response, { colors: true, depth: 4 }))
   }
 }

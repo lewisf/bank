@@ -55,9 +55,9 @@ export class PlaidCredentialsFileProvider
   implements PlaidServiceCredentialsProviderI {
 
   public initialize() {
-    const credentialsFileExists = fs.existsSync(CREDENTIALS_FILE_PATH);
+    const credentialsFileExists = fs.existsSync(CREDENTIALS_FILE_PATH)
     if (!credentialsFileExists) {
-      throw new Error(INIT_NOT_READY);
+      throw new Error(INIT_NOT_READY)
     }
 
     const credentials = require(CREDENTIALS_FILE_PATH)

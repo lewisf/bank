@@ -1,4 +1,3 @@
-import { ItemResponse, TokenResponse, AuthResponse, TransactionsResponse, TransactionsRequestOptions } from 'plaid'
 import plaid from "plaid"
 import { PlaidCredentialsFileProvider } from "./credentials/plaidServiceCredentialsProvider"
 import { Option, some, none } from "fp-ts/lib/Option"
@@ -9,86 +8,38 @@ interface PlaidCredentials {
   publicKey: string
 }
 
-interface DenodeifiedPlaidClient {
-  exchangePublicToken: (publicToken: string) => Promise<TokenResponse>,
-  getItem: (accessToken: string) => Promise<ItemResponse>,
-  getAuth: (accessToken: string) => Promise<AuthResponse>,
-  getTransactions: (accessToken: string, startDate: string, endDate: string, options?: TransactionsRequestOptions) => Promise<TransactionsResponse>
-}
-
 export namespace PlaidClientProvider {
-  let clientSingleton: plaid.Client | null = null;
-  let credentialsSingleton: PlaidCredentials | null = null;
+  let clientSingleton: plaid.Client | null = null
+  let credentialsSingleton: PlaidCredentials | null = null
 
   export function getCredentialsOpt() {
     if (credentialsSingleton) {
-      return some(credentialsSingleton);
+      return some(credentialsSingleton)
     }
 
-    const provider = new PlaidCredentialsFileProvider();
-    provider.initialize();
+    const provider = new PlaidCredentialsFileProvider()
+    provider.initialize()
 
     return provider.validate()
       .map(validCredentials => {
         // Storing in singleton
         credentialsSingleton = validCredentials
-        return validCredentials;
-      });
+        return validCredentials
+      })
   }
 
   export function getCredentials() {
-    const opt = getCredentialsOpt();
+    const opt = getCredentialsOpt()
     if (opt.isNone()) {
-      throw new Error("Failed to load Plaid credentials");
+      throw new Error("Failed to load Plaid credentials")
     }
 
-    return opt.value;
+    return opt.value
   }
 
-  function denodeifyClient(client: plaid.Client): DenodeifiedPlaidClient {
-    return {
-      exchangePublicToken: (publicToken: string): Promise<TokenResponse> =>
-        new Promise((resolve, reject) => {
-          client.exchangePublicToken(publicToken, (error, tokenResponse) => {
-            if (error !== null) { reject(error) }
-            resolve(tokenResponse)
-          })
-        }),
-      getItem: (accessToken: string): Promise<ItemResponse> =>
-        new Promise((resolve, reject) => {
-          client.getItem(accessToken, (error, itemResponse) => {
-            if (error !== null) { reject(error) }
-            resolve(itemResponse)
-          })
-        }),
-      getAuth: (accessToken: string): Promise<AuthResponse> =>
-        new Promise((resolve, reject) => {
-          client.getAuth(accessToken, (error, authResponse) => {
-            if (error !== null) { reject(error) }
-            resolve(authResponse)
-          })
-        }),
-      getTransactions: (accessToken: string, startDate: string, endDate: string, options?: TransactionsRequestOptions): Promise<TransactionsResponse> =>
-        new Promise((resolve, reject) => {
-          if (options) {
-            client.getTransactions(accessToken, startDate, endDate, options, (error, transactionsResponse) => {
-              if (error !== null) { reject(error) }
-              resolve(transactionsResponse);
-            });
-          } else {
-            client.getTransactions(accessToken, startDate, endDate, (error, transactionsResponse) => {
-              if (error !== null) { reject(error) }
-              resolve(transactionsResponse);
-            });
-          }
-        })
-    }
-  }
-
-  export function getClient(): Option<DenodeifiedPlaidClient> {
+  export function getClientOpt(): Option<plaid.Client> {
     if (clientSingleton) {
       return some(clientSingleton)
-        .map(denodeifyClient)
     }
 
     return getCredentialsOpt()
@@ -99,10 +50,17 @@ export namespace PlaidClientProvider {
           credentials.publicKey,
           plaid.environments.sandbox,
           { version: "2019-05-29" }
-        );
+        )
 
-        return getClient();
+        return getClientOpt()
       })
-      .getOrElseL(() => { return none; });
+      .getOrElseL(() => { return none })
+  }
+
+  export function getClient(): plaid.Client {
+    const clientOpt = getClientOpt()
+    if (clientOpt.isNone()) { throw new Error("Failed to get client!") }
+
+    return clientOpt.value
   }
 }
