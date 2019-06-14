@@ -37,7 +37,7 @@ export namespace InitCommand {
 
 Examples:
       bank transactions
-      bank prime
+      bank sync
 `)
     }
   }

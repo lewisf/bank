@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import { BaseFetcher } from './BaseFetcher'
-import { Account } from '../../store/account'
+import { Account } from '../../store/Account'
 import { AccountsRepo } from '../../store/db'
 
 export class AccountsFetcher extends BaseFetcher {

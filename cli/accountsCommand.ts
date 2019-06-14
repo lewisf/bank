@@ -5,7 +5,8 @@ import meow from 'meow';
 import { AccountTokensStore } from '../plaid/credentials/accountTokensStore';
 import { PlaidClientProvider } from '../plaid/clientProvider';
 import { AccountsFetcher } from '../plaid/fetchers/AccountsFetcher';
-import { Account } from '../store/account';
+import { Account } from '../store/Account';
+import { AccountsRepo } from '../store/db';
 
 export namespace AccountsCommand {
   export async function run(cli: meow.Result) {
@@ -17,8 +18,7 @@ export namespace AccountsCommand {
       colWidths: [10, 40, 10, 20, 30]
     });
 
-    const fetcher = new AccountsFetcher()
-    const [accounts, accountsCount] = await fetcher.run() as [Account[], number]
+    const accounts = await AccountsRepo.find();
 
     _(accounts).each(({
       mask,

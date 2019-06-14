@@ -49,7 +49,7 @@ export namespace AuthenticationApp {
       prettyPrintResponse(tokenResponse)
 
       console.log("")
-      console.log("Success! Try running `bank prime` next to prime transactions")
+      console.log("Success! Try running `bank sync` next to sync transactions")
 
       setTimeout(() => {
         app.emit("forceShutdown")

@@ -1,9 +1,10 @@
 import meow from 'meow';
-import { AccountsCommand } from './accountsCommand';
-import { ClearCommand } from './clearCommand';
-import { InitCommand } from './initCommand';
-import { PrimeCommand } from './primeCommand';
-import { TransactionsCommand } from './transactionsCommand';
+import { AccountsCommand } from './AccountsCommand';
+import { ClearCommand } from './ClearCommand';
+import { ClearDbCommand } from './ClearDbCommand';
+import { InitCommand } from './InitCommand';
+import { SyncCommand } from './SyncCommand';
+import { TransactionsCommand } from './TransactionsCommand';
 
 import { init as initDb } from '../store/db'
 
@@ -13,10 +14,15 @@ export const cli = meow(`
 
   Examples
     $ bank init           -- Initialize accounts
-    $ bank clear          -- Clear local database
-    $ bank prime          -- Fetch accounts and transactions
+    $ bank clear          -- Clear all
+    $ bank cleardb        -- Clear database only
+    $ bank sync          -- Fetch accounts and transactions
     $ bank accounts       -- See accounts
-    $ bank transactions   -- See transactions
+
+  Viewing transactions
+    $ bank transactions   
+    $ bank transactions --account some_account_id
+    $ bank transactions --under 1000 --over 300   
 `)
 
 export async function main(command: string, cli: meow.Result) {
@@ -26,12 +32,15 @@ export async function main(command: string, cli: meow.Result) {
     return;
   }
 
-  await initDb()
+  if (command !== 'cleardb') {
+    await initDb()
+  }
 
   switch (command) {
     case "init": return InitCommand.run(cli)
     case "clear": return ClearCommand.run(cli)
-    case "prime": return PrimeCommand.run(cli)
+    case "cleardb": return ClearDbCommand.run(cli)
+    case "sync": return await SyncCommand.run(cli)
     case "accounts": return await AccountsCommand.run(cli)
     case "transactions": return await TransactionsCommand.run(cli)
   }

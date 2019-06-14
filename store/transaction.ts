@@ -1,5 +1,8 @@
+import { In, Between, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
+import _ from 'lodash'
 import { Entity, PrimaryColumn, Column, ManyToOne } from 'typeorm';
-import { Account } from './account'
+import { Account } from './Account'
+import { TransactionsRepo } from './db'
 
 @Entity()
 export class Transaction {
@@ -15,8 +18,11 @@ export class Transaction {
   @Column()
   date: string
 
+  @Column({ nullable: true })
+  original_description?: string
+
   @Column()
-  original_description: string
+  name: string
 
   @Column()
   pending: boolean
@@ -24,9 +30,79 @@ export class Transaction {
   @Column()
   iso_currency_code: string
 
-  @Column()
+  @Column({ nullable: true })
   unofficial_currency_code?: string
 
   @ManyToOne(type => Account, account => account.transactions)
   account: Account
+}
+
+/**
+ * Get the date of the earliest transaction on file.
+ * 
+ * For now it's okay to do a stable sort after access rather than DB
+ * because the number of transactions is expected to be
+ * low enough.
+ * 
+ * @returns {string} ISO-8601 date
+ */
+export async function getEarliestTransactionDate() {
+  const transactions = await TransactionsRepo.find();
+  if (_.isEmpty(transactions)) {
+    return null
+  } else {
+    return _(transactions)
+      .chain()
+      .sortBy(['date'])
+      .first()
+      .get('date')
+      .value()
+  }
+}
+
+export class TransactionQueryBuilder {
+  private accountId: string[] = [];
+  private lessThan: number | null;
+  private moreThan: number | null;
+
+  public addAccountId(accountId: string) {
+    this.accountId = [...this.accountId, accountId]
+  }
+
+  public amountLessThan(value: number) {
+    this.lessThan = value;
+  }
+
+  public amountMoreThan(value: number) {
+    this.moreThan = value;
+  }
+
+  get() {
+    const {
+      accountId,
+      moreThan,
+      lessThan
+    } = this
+
+    let builder = _({})
+      .chain()
+
+    if (this.accountId.length > 0) {
+      builder = builder
+        .set('where.account_id', In(this.accountId))
+    }
+
+    if (moreThan && lessThan) {
+      builder = builder
+        .set('where.amount', Between(moreThan, lessThan))
+    } else if (moreThan) {
+      builder = builder
+        .set('where.amount', MoreThanOrEqual(moreThan))
+    } else if (lessThan) {
+      builder = builder
+        .set('where.amount', LessThanOrEqual(moreThan))
+    }
+
+    return builder.value()
+  }
 }

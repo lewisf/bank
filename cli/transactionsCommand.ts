@@ -2,60 +2,48 @@ import _ from 'lodash';
 import meow from 'meow';
 import moment, { ISO_8601 } from 'moment';
 import Table from 'cli-table';
-import { NumericDate as ND } from '../types/datetime';
-import { AccountTokensStore } from '../plaid/credentials/accountTokensStore';
-import { PlaidClientProvider } from '../plaid/clientProvider';
-import { Transaction, Account, TransactionsRequestOptions } from 'plaid';
+import { TransactionsRepo } from '../store/db';
+import { AccountsRepo } from '../store/db';
+import { Account } from '../store/Account';
+import { Transaction, TransactionQueryBuilder } from '../store/Transaction';
+import { In, MoreThan } from 'typeorm';
 
 const ISO8601_FORMAT = "YYYY-MM-DD";
 
 export namespace TransactionsCommand {
   const getAccountName = (accounts: Account[], accountId: string) => {
-    return _(accounts)
+    const name = _(accounts)
       .chain()
       .find(acc => acc.account_id === accountId)
       .get("name")
       .value();
+    return name;
   }
 
   export async function run(cli: meow.Result) {
-    const client = PlaidClientProvider.getClient()
-    const accessToken: string = AccountTokensStore.getOrError("ACCESS_TOKEN")
+    const { flags: { account, over, under } } = cli;
 
-    const { from, account, accounts: accountsFlag } = cli.flags
+    const accounts = await AccountsRepo.find()
 
-    const numericEndDate = ND.make(from)
-    const endDate = ND.isValid(numericEndDate) ? moment(numericEndDate.value) : moment()
-    const startDate = moment(endDate).subtract(30, 'days')
-
-    const options: TransactionsRequestOptions = {
-      count: 20,
-      offset: 0,
-      // @ts-ignore
-      account_ids: null
+    const builder = new TransactionQueryBuilder()
+    if (account) {
+      account.split(',')
+        .forEach((accountId: string) => {
+          builder.addAccountId(accountId)
+        })
     }
+    if (over) { builder.amountMoreThan(over) }
+    if (under) { builder.amountLessThan(under) }
 
-    if (accountsFlag) {
-      options.account_ids = accountsFlag.split(',');
-    } else if (account) {
-      options.account_ids = [account as string]
-    }
+    const query = builder.get()
+    console.log(query)
 
-    const {
-      transactions,
-      accounts,
-      total_transactions: totalTransactions
-    } = await client.getTransactions(
-      accessToken,
-      startDate.format(ISO8601_FORMAT),
-      endDate.format(ISO8601_FORMAT),
-      options
-    )
+    const transactions =
+      await TransactionsRepo.find(query)
 
     const table = new Table({
       head: ["date", "account", "name", "amount"],
-      colWidths: [12, 20, 50, 10],
-      style: { 'padding-left': 0, 'padding-right': 0 }
+      colWidths: [12, 20, 50, 10]
     });
 
     _(transactions)
@@ -69,19 +57,5 @@ export namespace TransactionsCommand {
       })
 
     console.log(table.toString());
-
-    if (transactions.length > 0) {
-      const lastTxn = _(transactions).last() as Transaction;
-      const flags = [
-        "--from", lastTxn.date
-      ];
-
-      if (account) {
-        flags.push("--account");
-        flags.push(`"${account}"`);
-      }
-
-      console.log(`Next: bank transactions ${flags.join(" ")}`)
-    }
   }
 }

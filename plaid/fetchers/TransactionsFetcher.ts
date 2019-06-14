@@ -2,14 +2,16 @@ import moment from 'moment'
 import { Client, Transaction as PlaidTransaction } from 'plaid'
 import { BaseFetcher } from './BaseFetcher'
 import { TransactionsRepo } from '../../store/db'
-import { Transaction } from '../../store/transaction'
+import { Transaction } from '../../store/Transaction'
 
 const DEFAULT_OPTIONS = {
   count: 500,
   offset: 0
 }
+const END_DATE = moment().format("YYYY-MM-DD");
+const TIMEOUT = 1500;
 
-const END_DATE = moment().format("YYYY-MM-DD")
+const sleep = async (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 export class TransactionsFetcher extends BaseFetcher {
   async run(startDate: string, endDate: string = END_DATE) {
@@ -17,7 +19,6 @@ export class TransactionsFetcher extends BaseFetcher {
     let fetchedCount = 0;
     let targetCount = null;
 
-    console.log("Starting fetch")
     while (!done) {
       const [transactions, total] = await this.fetch(
         startDate,
@@ -31,6 +32,8 @@ export class TransactionsFetcher extends BaseFetcher {
       if (fetchedCount === targetCount) {
         done = true;
       }
+
+      await sleep(TIMEOUT);
     }
 
     let [allTransactions, transactionsCount] = await TransactionsRepo.findAndCount();
