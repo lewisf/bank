@@ -29,6 +29,7 @@ export namespace InitCommand {
             message: 'Run `bank sync` next'
           });
           server.close();
+          process.exit(0);
         })
 
         console.log('Opening your browser to setup your bank account.. ')

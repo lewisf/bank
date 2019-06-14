@@ -1,6 +1,5 @@
 import inquirer from 'inquirer'
 import meow from 'meow'
-import { SQLITE3_DB_PATH } from '../static/constants'
 import * as db from '../store/db'
 import { AccountTokensStore as ATS } from '../plaid/credentials/accountTokensStore'
 

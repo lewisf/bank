@@ -80,8 +80,8 @@ export async function count() {
 
 export class TransactionQueryBuilder {
   private accountId: string[] = [];
-  private lessThan: number | null;
-  private moreThan: number | null;
+  private lessThan: number | null = null;
+  private moreThan: number | null = null;
 
   public addAccountId(accountId: string) {
     this.accountId = [...this.accountId, accountId]
@@ -96,7 +96,7 @@ export class TransactionQueryBuilder {
   }
 
   get() {
-    const {
+    let {
       accountId,
       moreThan,
       lessThan
@@ -110,15 +110,15 @@ export class TransactionQueryBuilder {
         .set('where.account_id', In(this.accountId))
     }
 
-    if (moreThan && lessThan) {
+    if (moreThan !== null && lessThan !== null) {
       builder = builder
         .set('where.amount', Between(moreThan, lessThan))
-    } else if (moreThan) {
+    } else if (moreThan !== null) {
       builder = builder
         .set('where.amount', MoreThanOrEqual(moreThan))
-    } else if (lessThan) {
+    } else if (lessThan !== null) {
       builder = builder
-        .set('where.amount', LessThanOrEqual(moreThan))
+        .set('where.amount', LessThanOrEqual(lessThan))
     }
 
     return builder.value()

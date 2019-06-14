@@ -31,8 +31,8 @@ export namespace TransactionsCommand {
           builder.addAccountId(accountId)
         })
     }
-    if (over) { builder.amountMoreThan(over) }
-    if (under) { builder.amountLessThan(under) }
+    if (over !== null && over !== undefined) { builder.amountMoreThan(over) }
+    if (under !== null && under !== undefined) { builder.amountLessThan(under) }
 
     const query = builder.get()
 

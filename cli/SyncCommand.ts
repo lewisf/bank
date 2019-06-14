@@ -1,12 +1,11 @@
 import meow from 'meow'
 import moment from 'moment'
 import inquirer from 'inquirer'
-import { SyncRunsRepo } from '../store/db'
 import { NumericDate } from '../types/datetime'
 import { TransactionsFetcher } from '../plaid/fetchers/transactionsFetcher';
 import { AccountsFetcher } from '../plaid/fetchers/accountsFetcher';
 import { count as transactionCount } from '../store/transaction';
-import { SyncRun, mark as markSyncRun } from '../store/SyncRun';
+import { mark as markSyncRun } from '../store/SyncRun';
 import { getLatestRecordedTransactionDate } from '../store/transaction';
 
 export namespace SyncCommand {
@@ -47,6 +46,7 @@ export namespace SyncCommand {
           await markSyncRun();
 
           console.log(`Loaded ${count} transactions since ${date.value}.`)
+          console.log('The next time you run `bank sync` it will', `pick up new transactions since ${date.value}`)
         }
       } else {
         console.log("Well, I guess we won't then!")
@@ -59,6 +59,7 @@ export namespace SyncCommand {
       await markSyncRun();
 
       console.log(`Loaded ${(count as number) - currentCount} transactions since ${latestDate}.`)
+      console.log('The next time you run `bank sync` it will', `pick up new transactions since ${latestDate}`)
     }
   }
 }

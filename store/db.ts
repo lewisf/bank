@@ -21,7 +21,7 @@ export async function init() {
     type: "sqlite",
     database: SQLITE3_DB_PATH,
     entities: [Account, SyncRun, Transaction],
-    logging: true,
+    logging: false,
     synchronize: true
   };
 

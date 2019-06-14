@@ -4,8 +4,6 @@ import meow from 'meow';
 
 import { AccountTokensStore } from '../plaid/credentials/accountTokensStore';
 import { PlaidClientProvider } from '../plaid/clientProvider';
-import { AccountsFetcher } from '../plaid/fetchers/AccountsFetcher';
-import { Account } from '../store/Account';
 import { AccountsRepo } from '../store/db';
 
 export namespace AccountsCommand {
