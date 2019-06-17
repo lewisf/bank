@@ -43,5 +43,19 @@
     "@types/sqlite3": "^3.1.5",
     "jest": "^24.8.0",
     "ts-jest": "^24.0.2"
+  },
+  "pkg": {
+    "assets": [
+      "./node_modules/@types",
+      "./node_modules/typescript/lib/*.d.ts",
+      "auth/**/*.ts",
+      "cli/**/*.ts",
+      "notificaitons/**/*.ts",
+      "plaid/**/*.ts",
+      "static/**/*.ts",
+      "store/**/*.ts",
+      "types/**/*.ts",
+      "./tsconfig.json"
+    ]
   }
 }
