@@ -16,7 +16,7 @@ export const cli = meow(`
     $ bank init           -- Initialize accounts
     $ bank clear          -- Clear all
     $ bank cleardb        -- Clear database only
-    $ bank sync          -- Fetch accounts and transactions
+    $ bank sync           -- Fetch accounts and transactions
     $ bank accounts       -- See accounts
 
   Viewing transactions
