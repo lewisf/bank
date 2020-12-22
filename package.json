@@ -21,7 +21,7 @@
     "meow": "^5.0.0",
     "mkdirp": "^0.5.1",
     "moment": "^2.24.0",
-    "node-notifier": "^5.4.0",
+    "node-notifier": "^8.0.1",
     "open": "^6.3.0",
     "plaid": "^4.0.0",
     "sqlite3": "^4.0.9",
